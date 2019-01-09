@@ -135,8 +135,6 @@ class MainWindowExample(QMainWindow):
                             self.hide()
                             anotherwin = winlevel3(self)
                             anotherwin.show()
-                            #otraventana = ventana_Nivel3(self)
-                            #otraventana.show()
 
                     level = row[3]
                     options = {1: level1,
@@ -189,7 +187,7 @@ class winlevel1(QMainWindow):
 
         if reply == QMessageBox.Close:
             logger.debug("Close")
-            #Update de autenticado aqui
+            #Authenticate Update
             dbconfig = read_db_config()
             conn = MySQLConnection(**dbconfig)
             cursor = conn.cursor()
@@ -224,13 +222,13 @@ class winlevel1(QMainWindow):
             self.close()
 #
 #
-#End level 1
+#End Window Level 1
 #
 #
 
 #
 #
-#Level 2
+#Window Level 2
 #
 class winlevel2(QMainWindow):
 
@@ -255,7 +253,7 @@ class winlevel2(QMainWindow):
 
         if reply == QMessageBox.Close:
             logger.debug("Close")
-            #Update de autenticado aqui
+            #Authenticate Update
             dbconfig = read_db_config()
             conn = MySQLConnection(**dbconfig)
             cursor = conn.cursor()
@@ -290,11 +288,11 @@ class winlevel2(QMainWindow):
             self.close()
 #
 #
-#End Level 2
+#End Window Level 2
 #
 
 #
-# Level 3
+# Window Level 3
 #
 class winlevel3(QMainWindow):
 
@@ -319,7 +317,7 @@ class winlevel3(QMainWindow):
 
         if reply == QMessageBox.Close:
             logger.debug("Close")
-            #authenticate Update
+            #Authenticate Update
             dbconfig = read_db_config()
             conn = MySQLConnection(**dbconfig)
             cursor = conn.cursor()
@@ -354,7 +352,7 @@ class winlevel3(QMainWindow):
             self.close()
 
 #
-# End level 3
+# End Window Level 3
 #
 
 
