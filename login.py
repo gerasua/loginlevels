@@ -6,6 +6,19 @@ from PyQt5.QtWidgets import (QApplication, QMessageBox)
 from PyQt5.QtCore import Qt
 import sys
 import imagesqt_rc
+import logging
+
+#Logging and console
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+formatter = logging.Formatter('%(asctime)s:%(name)s:%(funcName)s:%(message)s')
+file_handler = logging.FileHandler('error.log')
+file_handler.setLevel(logging.ERROR)
+file_handler.setFormatter(formatter)
+stream_handler = logging.StreamHandler()
+stream_handler.setFormatter(formatter)
+logger.addHandler(file_handler)
+logger.addHandler(stream_handler)
 
 class MainWindowExample(QMainWindow):
 
@@ -28,28 +41,27 @@ class MainWindowExample(QMainWindow):
             cursor1 = conn.cursor()
             cursor1.execute("SELECT * FROM users WHERE authenticate='1'")
             rows = cursor1.fetchall()
-            print('Total Row(s):', cursor1.rowcount)
+            logger.debug("Total Row(s): %s" % cursor1.rowcount)
             if cursor1.rowcount >= 1:
-                print("The user is alredy logged in")
+                logger.debug("The user is alredy logged in")
                 Q = QMessageBox()
                 Q = QMessageBox.information(Q, 'Error',
                                             'The system is already being used.',
                                             QMessageBox.Ok)
                 for row in rows:
-                    print(row)
+                    logger.debug("Row: %s" % row)
             else:
 
                 cursor.execute("SELECT * FROM users WHERE username='" + username + "' AND password='" + password + "'")
                 row = cursor.fetchone()
 
                 if row is not None:
-                    print(row)
-                    print("\nUser Levelo: ", row[3])
+                    logger.debug("User Level: %s" % row[3])
 
-                    def nivel1():
-                        print("Hi level 1")
+                    def level1():
+                        logger.debug("Hi level 1")
                         if row[4] == 1:
-                            print("The user is alredy logged in", row[1])
+                            logger.debug("The user is alredy logged in: %s" % row[1])
                             Q = QMessageBox()
                             Q = QMessageBox.information(Q, 'Error',
                                                         'The system is already being used.',
@@ -58,27 +70,24 @@ class MainWindowExample(QMainWindow):
                             query = """ UPDATE users SET authenticate = %s WHERE id = %s """
                             data = (1, row[0])
                             try:
-                                # update usuario
+                                # User update
                                 cursor = conn.cursor()
                                 cursor.execute(query, data)
-                                # Realizar el cambio
+                                # Commit
                                 conn.commit()
                             except Error as error:
-                                print(error)
+                                logger.exception("Level 1 Error: %s" % error)
                             finally:
                                 cursor.close()
                                 conn.close()
-
-                            print("Hi again lelvel 1", row)
                             self.hide()
-                            otraventana = ventana_Nivel1(self)
-                            otraventana.show()
+                            anotherwin = winlevel1(self)
+                            anotherwin.show()
 
-                    def nivel2():
-                        print("Hi level 2")
-
+                    def level2():
+                        logger.debug("Hi level 2:")
                         if row[4] == 1:
-                            print("The user is alredy logged in", row[1])
+                            logger.debug("The user is alredy logged in: %s" % row[1])
                             Q = QMessageBox()
                             Q = QMessageBox.information(Q, 'Error',
                                                         'The system is already being used.',
@@ -87,26 +96,24 @@ class MainWindowExample(QMainWindow):
                             query = """ UPDATE users SET authenticate = %s WHERE id = %s """
                             data = (1, row[0])
                             try:
-                                # update usuario
+                                # User update
                                 cursor = conn.cursor()
                                 cursor.execute(query, data)
-                                # Realizar el cambio
+                                # Commit
                                 conn.commit()
                             except Error as error:
-                                print(error)
+                                logger.exception("Level 2 Error: %s" % error)
                             finally:
                                 cursor.close()
                                 conn.close()
-
-                            print("Hi again level 2", row)
                             self.hide()
-                            otraventana = ventana_Nivel2(self)
-                            otraventana.show()
+                            anotherwin = winlevel2(self)
+                            anotherwin.show()
 
-                    def nivel3():
+                    def level3():
 
                         if row[4] == 1:
-                            print("The user is alredy logged in", row[1])
+                            logger.debug("The user is alredy logged in: %s" % row[1])
                             Q = QMessageBox()
                             Q = QMessageBox.information(Q, 'Error',
                                                         'The system is already being used.',
@@ -115,58 +122,58 @@ class MainWindowExample(QMainWindow):
                             query = """ UPDATE users SET authenticate = %s WHERE id = %s """
                             data = (1, row[0])
                             try:
-                                # update usuario
+                                # User update
                                 cursor = conn.cursor()
                                 cursor.execute(query, data)
-                                # Realizar el cambio
+                                # Commit
                                 conn.commit()
                             except Error as error:
-                                print(error)
+                                logger.exception("Level 3 Error: %s" % error)
                             finally:
                                 cursor.close()
                                 conn.close()
-
-                            print("Hi level 3", row)
                             self.hide()
-                            otraventana = ventana_Nivel3(self)
-                            otraventana.show()
+                            anotherwin = winlevel3(self)
+                            anotherwin.show()
+                            #otraventana = ventana_Nivel3(self)
+                            #otraventana.show()
 
-                    nivel = row[3]
-                    options = {1: nivel1,
-                               2: nivel2,
-                               3: nivel3,
+                    level = row[3]
+                    options = {1: level1,
+                               2: level2,
+                               3: level3,
                                }
-                    options[nivel]()
+                    options[level]()
 
                 else:
-                    print("User or password incorrect/empty")
+                    logger.debug("User or password incorrect/empty")
                     Q = QMessageBox()
                     Q = QMessageBox.information(Q, 'Error',
                                                 'User or password incorrect/empty.',
                                                 QMessageBox.Ok)
 
         except Error as e:
-            print(e)
+            logger.exception("Authenticated Error DB: %s" % e)
 
         finally:
             cursor.close()
             conn.close()
 
 #
-#Fin Módulo de Autenticación
+#End Module Log in
 #
 
 #
-# Modulo Pesador
+# Window Level 1
 #
-class ventana_Nivel1(QMainWindow):
+class winlevel1(QMainWindow):
 
     def __init__(self, parent=None):
-        super(ventana_Nivel1, self).__init__(parent)
+        super(winlevel1, self).__init__(parent)
         loadUi('level1.ui', self)
-        self.btn_salir.clicked.connect(self.salida)
+        self.btn_exit.clicked.connect(self.exitwinlevel1)
 
-    def salida(self):
+    def exitwinlevel1(self):
         self.close()
 
     def closeEvent(self, event):
@@ -177,11 +184,11 @@ class ventana_Nivel1(QMainWindow):
         """
         reply = QMessageBox.question(
             self, "Message",
-            "¿Estás completamente seguro de salir del sistema?",
+            "Are you sure about exit?",
             QMessageBox.Close | QMessageBox.Cancel)
 
         if reply == QMessageBox.Close:
-            print("Salida If? Close")
+            logger.debug("Close")
             #Update de autenticado aqui
             dbconfig = read_db_config()
             conn = MySQLConnection(**dbconfig)
@@ -191,19 +198,19 @@ class ventana_Nivel1(QMainWindow):
             query = """ UPDATE users SET authenticate = %s WHERE id = %s """
             data = (0, row[0])
             try:
-                # update usuario
+                # User update
                 cursor = conn.cursor()
                 cursor.execute(query, data)
-                # Realizar el cambio
+                # Commit
                 conn.commit()
                 app.quit()
             except Error as error:
-                print(error)
+                logger.exception("Error Update User level 1: %s" % error)
             finally:
                 cursor.close()
                 conn.close()
         else:
-            print("Salida Else? Cancel")
+            logger.debug("Cancel")
             event.ignore()
 
 
@@ -213,7 +220,7 @@ class ventana_Nivel1(QMainWindow):
         results in QMessageBox dialog from closeEvent, good but how/why?
         """
         if event.key() == Qt.Key_Escape:
-            print("Key Scape?")
+            logger.debug("Key Scape")
             self.close()
 #
 #
@@ -225,14 +232,14 @@ class ventana_Nivel1(QMainWindow):
 #
 #Level 2
 #
-class ventana_Nivel2(QMainWindow):
+class winlevel2(QMainWindow):
 
     def __init__(self, parent=None):
-        super(ventana_Nivel2, self).__init__(parent)
+        super(winlevel2, self).__init__(parent)
         loadUi('level2.ui', self)
-        self.btn_salir.clicked.connect(self.salida)
+        self.btn_exit.clicked.connect(self.exitwinlevel2)
 
-    def salida(self):
+    def exitwinlevel2(self):
         self.close()
 
     def closeEvent(self, event):
@@ -243,11 +250,11 @@ class ventana_Nivel2(QMainWindow):
         """
         reply = QMessageBox.question(
             self, "Message",
-            "¿Estás completamente seguro de salir del sistema?",
+            "Are you sure about exit?",
             QMessageBox.Close | QMessageBox.Cancel)
 
         if reply == QMessageBox.Close:
-            print("Salida If? Close")
+            logger.debug("Close")
             #Update de autenticado aqui
             dbconfig = read_db_config()
             conn = MySQLConnection(**dbconfig)
@@ -257,19 +264,19 @@ class ventana_Nivel2(QMainWindow):
             query = """ UPDATE users SET authenticate = %s WHERE id = %s """
             data = (0, row[0])
             try:
-                # update usuario
+                # User update
                 cursor = conn.cursor()
                 cursor.execute(query, data)
-                # Realizar el cambio
+                # Commit
                 conn.commit()
                 app.quit()
             except Error as error:
-                print(error)
+                logger.exception("Error Update User Level 2: %s" % error)
             finally:
                 cursor.close()
                 conn.close()
         else:
-            print("Salida Else? Cancel")
+            logger.debug("Cancel")
             event.ignore()
 
 
@@ -279,24 +286,24 @@ class ventana_Nivel2(QMainWindow):
         results in QMessageBox dialog from closeEvent, good but how/why?
         """
         if event.key() == Qt.Key_Escape:
-            print("Key Scape?")
+            logger.debug("Key Scape")
             self.close()
 #
 #
-#Fin Módulo Supervisor
+#End Level 2
 #
 
 #
-# Modulo Admiistracion
+# Level 3
 #
-class ventana_Nivel3(QMainWindow):
+class winlevel3(QMainWindow):
 
     def __init__(self, parent=None):
-        super(ventana_Nivel3, self).__init__(parent)
+        super(winlevel3, self).__init__(parent)
         loadUi('level3.ui', self)
-        self.btn_salir.clicked.connect(self.salida)
+        self.btn_exit.clicked.connect(self.exitwinlevel3)
 
-    def salida(self):
+    def exitwinlevel3(self):
         self.close()
 
     def closeEvent(self, event):
@@ -307,12 +314,12 @@ class ventana_Nivel3(QMainWindow):
         """
         reply = QMessageBox.question(
             self, "Message",
-            "¿Estás completamente seguro de salir del sistema?",
+            "Are you sure about exit?",
             QMessageBox.Close | QMessageBox.Cancel)
 
         if reply == QMessageBox.Close:
-            print("Salida If? Close")
-            #Update de autenticado aqui
+            logger.debug("Close")
+            #authenticate Update
             dbconfig = read_db_config()
             conn = MySQLConnection(**dbconfig)
             cursor = conn.cursor()
@@ -321,19 +328,19 @@ class ventana_Nivel3(QMainWindow):
             query = """ UPDATE users SET authenticate = %s WHERE id = %s """
             data = (0, row[0])
             try:
-                # update usuario
+                # User update
                 cursor = conn.cursor()
                 cursor.execute(query, data)
-                # Realizar el cambio
+                # Commit
                 conn.commit()
                 app.quit()
             except Error as error:
-                print(error)
+                logger.exception("Error Update User Level 3: %s" % error)
             finally:
                 cursor.close()
                 conn.close()
         else:
-            print("Salida Else? Cancel")
+            logger.debug("Cancel")
             event.ignore()
 
 
@@ -343,13 +350,15 @@ class ventana_Nivel3(QMainWindow):
         results in QMessageBox dialog from closeEvent, good but how/why?
         """
         if event.key() == Qt.Key_Escape:
-            print("Key Scape?")
+            logger.debug("Key Scape")
             self.close()
 
 #
 # End level 3
 #
 
+
+#Start App
 app = QApplication(sys.argv)
 main = MainWindowExample()
 main.show()
