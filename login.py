@@ -135,7 +135,7 @@ class MainWindowExample(QMainWindow):
                             self.hide()
                             anotherwin = winlevel3(self)
                             anotherwin.show()
-
+                    #Python switch
                     level = row[3]
                     options = {1: level1,
                                2: level2,
